@@ -16,25 +16,24 @@ def apply_schema_rules(facts, rules):
     # Constroi e retorna uma lista de tuplas dos fatos validos
     facts.reverse()
     result = list(facts)
-    removed = []  # Lista com atributos que ja foram removidos pela regra 'one'
-
+    removedone = []  # Lista com atributos que ja foram removidos pela regra 'one'
     for [e, a, v, added] in facts:  # entidade (E), atributo (A), valor (V) e added
 
         if a not in rules:  # Se atributo 'a' não possui uma regra, remove fato
             result.remove((e, a, v, added))
 
-        elif not added:  # Se added é false, fato não entra e remove se ouver algum outro igual
+        elif not added:  # Se added é false, fato não entra e remove se houver algum outro igual
             for [ve, va, vv, vadded] in result:
-                if ve == e and va == a:
+                if ve == e and va == a and vv == v:
                     result.remove((ve, va, vv, vadded))
 
         elif rules[a] == 'one':  # Se para o atributo 'a' a regra é one, remove todos os outros
-            if (e, a) in removed:
+            if (e, a) in removedone:
                 continue
+            removedone.append((e, a))
             for [ve, va, vv, vadded] in result:
                 if ve == e and va == a and vv != v:
                     result.remove((ve, va, vv, vadded))
-                    removed.append((e, a))
 
     result.reverse()
     return result
